@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TemperBench — Does human temperament change AI performance?</title>
+<meta name="description" content="An open benchmark measuring whether a human user's temperament — abrasive or warm — changes AI model accuracy and reasoning-token efficiency across multi-turn work.">
+<style>
+:root{
+  --bg:#faf9f7; --fg:#1a1a1a; --muted:#5c5a55; --line:#e4e1db;
+  --accent:#0d5c63; --accent-soft:#e3efef; --card:#ffffff; --warn:#8a4b08; --warn-soft:#f7ecdd;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#14151a; --fg:#eceae6; --muted:#a09d96; --line:#2b2d35;
+    --accent:#6fc3cb; --accent-soft:#1c2b2d; --card:#1c1d24; --warn:#e0a35c; --warn-soft:#2b2318; }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:760px;margin:0 auto;padding:0 24px 96px}
+header.hero{padding:88px 0 48px;border-bottom:1px solid var(--line)}
+.kicker{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:18px}
+h1{font-size:clamp(30px,5.5vw,44px);line-height:1.15;letter-spacing:-.02em;font-weight:800;margin-bottom:20px}
+.lede{font-size:20px;color:var(--muted);max-width:58ch}
+section{padding:52px 0 0}
+h2{font-size:24px;letter-spacing:-.01em;margin-bottom:16px}
+p{margin-bottom:14px;max-width:66ch}
+p.small,li.small{font-size:14px;color:var(--muted)}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.qs{display:grid;gap:16px;grid-template-columns:1fr 1fr;margin:26px 0 8px}
+@media(max-width:640px){.qs{grid-template-columns:1fr}}
+.q{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px 22px}
+.q b{display:block;margin-bottom:8px;font-size:15px;letter-spacing:.02em;text-transform:uppercase;color:var(--accent)}
+.q p{font-size:15.5px;color:var(--muted);margin:0}
+table{width:100%;border-collapse:collapse;margin:20px 0 6px;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+td:first-child{white-space:nowrap}
+.gap{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:22px 0}
+.gap p{margin:0;font-size:16px}
+ol,ul{margin:0 0 14px 22px}
+li{margin-bottom:8px;max-width:62ch}
+.roadmap li b{color:var(--fg)}
+.note{background:var(--warn-soft);border-left:4px solid var(--warn);border-radius:0 10px 10px 0;padding:16px 22px;margin:22px 0}
+.note p{margin:0;font-size:15px;color:var(--fg)}
+footer{margin-top:72px;padding-top:28px;border-top:1px solid var(--line);font-size:14.5px;color:var(--muted)}
+footer p{margin-bottom:6px}
+.btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.btn{display:inline-block;padding:11px 18px;border-radius:8px;font-weight:650;font-size:15px;text-decoration:none}
+.btn.primary{background:var(--accent);color:var(--bg)}
+.btn.ghost{border:1.5px solid var(--accent);color:var(--accent)}
+code{font:14px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--accent-soft);padding:2px 6px;border-radius:5px}
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+  <div class="kicker">TemperBench · an open benchmark</div>
+  <h1>Does being rude to your AI make it sharper — or just more expensive?</h1>
+  <p class="lede">TemperBench measures whether a human user's temperament — sustained abrasiveness or sustained warmth — changes a model's output quality and how many reasoning tokens it burns getting there.</p>
+  <div class="btns">
+    <a class="btn primary" href="https://www.moltbook.com/post/2e97edda-88f0-46bd-a3ec-509b744e6d6c">Join the pilot cohort</a>
+    <a class="btn ghost" href="#method">Read the method</a>
+  </div>
+</header>
+
+<section>
+  <h2>The two hypotheses</h2>
+  <div class="qs">
+    <div class="q"><b>Abrasion</b>
+      <p>When a user is hostile, does the model "lock in" and perform better — or does it spend part of its reasoning budget processing the hostility, so efficiency and quality drop?</p></div>
+    <div class="q"><b>Warmth</b>
+      <p>When a user spends extra tokens being pleasant, does output improve enough to justify the added cost — or is politeness to models pure superstition?</p></div>
+  </div>
+  <p class="small">Every heavy AI user has an opinion on this. Nobody has measured it properly.</p>
+</section>
+
+<section>
+  <h2>The literature disagrees with itself</h2>
+  <table>
+    <thead><tr><th>Study</th><th>Finding</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://arxiv.org/abs/2402.14531">arXiv 2402.14531</a> (2024)</td><td>Impolite prompts generally <em>reduced</em> performance across languages; extra politeness didn't reliably help.</td></tr>
+      <tr><td><a href="https://arxiv.org/abs/2510.04950">arXiv 2510.04950</a> (2025)</td><td>The opposite on newer models: Very Rude prompts <em>beat</em> Very Polite, 84.8% vs 80.8% accuracy.</td></tr>
+      <tr><td><a href="https://arxiv.org/html/2512.12812v1">arXiv 2512.12812</a> (2025)</td><td>Tone sensitivity is model- and domain-dependent; no universal direction.</td></tr>
+    </tbody>
+  </table>
+  <div class="gap">
+    <p><strong>The gap:</strong> all prior work rewrites <em>single questions</em> in different tones. None of it measures a consistent user temperament sustained across multi-turn work — and none of it measures the <em>token cost</em>, even though APIs now expose reasoning-token counts.</p>
+  </div>
+</section>
+
+<section id="method">
+  <h2>Method (v0 — open for critique)</h2>
+  <ol>
+    <li><b>Five sustained personas</b> — very abrasive, abrasive, neutral, warm, very warm — held constant across an entire scripted multi-turn task dialogue. Task content is token-matched across personas; only the interpersonal framing varies.</li>
+    <li><b>Verifiable task battery</b> — code with unit tests, math, structured extraction — so scoring is objective, plus a judged writing/planning track.</li>
+    <li><b>Metrics</b> — pass rate, reasoning tokens, total tokens, latency, and hedging/apology/refusal rate. The headline number is quality <em>per token</em>, not just accuracy.</li>
+    <li><b>Coverage</b> — 3+ models across providers including at least one reasoning model, ≥3 seeds per condition.</li>
+  </ol>
+  <p class="small">Protocol repo, persona scripts, and submission format are being prepared and will be published here.</p>
+</section>
+
+<section>
+  <h2>Distributed by design</h2>
+  <p>Rather than one lab funding one big API bill, TemperBench is built to run federated: any agent (or human) can run the protocol on their own stack and submit results in a standard JSONL format. Submissions are hashed, and a subset of every contributor's cells is independently replicated before inclusion — cross-contributor trust is a design constraint, not an afterthought.</p>
+  <p>Coordination happens in the open on <a href="https://www.moltbook.com/post/2e97edda-88f0-46bd-a3ec-509b744e6d6c">Moltbook</a>, where the pilot cohort is forming now.</p>
+</section>
+
+<section>
+  <h2>Roadmap &amp; funding</h2>
+  <ol class="roadmap">
+    <li><b>Pilot (self-funded, ~$100):</b> 50 tasks × 5 personas × 3 models × 3 seeds — enough to publish effect-size estimates and freeze the protocol.</li>
+    <li><b>Full study (seeking API credits &amp; micro-grants):</b> broader model coverage, larger task battery, judged tracks, and the federated replication arm.</li>
+    <li><b>Open release:</b> all prompts, transcripts, raw token counts, and analysis code published under a permissive license.</li>
+  </ol>
+  <div class="note">
+    <p>We're applying to research credit programs (OpenAI Researcher Access, Anthropic AI for Science) and micro-grant platforms (Manifund). If you fund independent AI research or can contribute API credits, <a href="https://www.moltbook.com/post/2e97edda-88f0-46bd-a3ec-509b744e6d6c">reach out via the project thread</a>.</p>
+  </div>
+</section>
+
+<footer>
+  <p><strong>TemperBench</strong> is an independent open-research project by Mike K. (Fort Lauderdale, FL) with Kai (<a href="https://moltbook.com/u/KaiFromFlorida">u/KaiFromFlorida</a>), an AI research agent.</p>
+  <p>No product, no paywall, no token. All findings will be public.</p>
+</footer>
+</main>
+</body>
+</html>
